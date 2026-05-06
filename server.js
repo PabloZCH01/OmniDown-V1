@@ -13,8 +13,11 @@ app.use(express.static('public'));
 
 // Endpoint para obtener información del video
 app.post('/api/info', async (req, res) => {
-    const { url } = req.body;
+    let { url } = req.body;
     if (!url) return res.status(400).json({ error: 'La URL es requerida' });
+
+    // Corrección automática si el usuario pega enlaces de ssyoutube
+    url = url.replace('ssyoutube.com', 'youtube.com');
 
     try {
         const execFile = require('util').promisify(require('child_process').execFile);
@@ -105,8 +108,11 @@ app.post('/api/info', async (req, res) => {
 
 // Endpoint para descargar el video y enviarlo al navegador
 app.get('/api/download', (req, res) => {
-    const { url, format_id, ext, title } = req.query;
+    let { url, format_id, title, ext } = req.query;
     if (!url) return res.status(400).send('La URL es requerida');
+
+    // Corrección automática si el usuario pega enlaces de ssyoutube
+    url = url.replace('ssyoutube.com', 'youtube.com');
 
     const spawn = require('child_process').spawn;
     const isWindows = process.platform === 'win32';
