@@ -30,7 +30,9 @@ app.post('/api/info', async (req, res) => {
                 '--dump-json',
                 '--no-playlist',
                 '--no-warnings',
-                '--prefer-free-formats'
+                '--prefer-free-formats',
+                '--force-ipv4',
+                '--extractor-args', 'youtube:player_client=android'
             ]);
             stdoutData = result.stdout;
         } catch (execError) {
@@ -38,7 +40,8 @@ app.post('/api/info', async (req, res) => {
             if (execError.stdout) {
                 stdoutData = execError.stdout;
             } else {
-                throw execError;
+                const stderrMsg = execError.stderr ? execError.stderr.toString() : '';
+                throw new Error(`${execError.message} \n\nDetalle yt-dlp: ${stderrMsg}`);
             }
         }
 
@@ -49,38 +52,50 @@ app.post('/api/info', async (req, res) => {
         }
 
         const info = JSON.parse(jsonLine);
-        const formats = info.formats
-            .filter(f => f.ext === 'mp4' && f.vcodec !== 'none' && f.acodec !== 'none')
+        let formats = info.formats
+            .filter(f => f.ext === 'mp4' && f.vcodec !== 'none' && f.acodec !== 'none' && f.format_id)
             .map(f => ({
                 format_id: f.format_id,
-                resolution: f.resolution || 'unknown',
+                resolution: f.resolution || 'Auto',
                 ext: f.ext,
                 url: f.url,
                 filesize: f.filesize
             }))
             .sort((a, b) => (b.filesize || 0) - (a.filesize || 0));
 
-        // Obtener el mejor formato de solo audio
-        const audioFormatRaw = info.formats
-            .filter(f => f.acodec !== 'none' && f.vcodec === 'none')
-            .sort((a, b) => (b.filesize || 0) - (a.filesize || 0))[0];
-
-        if (audioFormatRaw) {
-            formats.unshift({
-                format_id: audioFormatRaw.format_id,
-                resolution: 'Audio',
-                ext: 'mp3',
-                url: audioFormatRaw.url,
-                filesize: audioFormatRaw.filesize
+        // Si la plataforma (como Facebook) no nos da formatos con audio+video juntos, creamos una opción segura "best"
+        if (formats.length === 0) {
+            formats.push({
+                format_id: 'best',
+                resolution: 'Video (Mejor Calidad)',
+                ext: 'mp4',
+                filesize: null
             });
         }
+
+        // Siempre inyectar una opción de "Solo Audio" garantizada para TikTok y todas las demás
+        formats.unshift({
+            format_id: 'bestaudio',
+            resolution: 'Audio',
+            ext: 'mp3',
+            filesize: null
+        });
+
+        // Limpiar duplicados de resolución (opcional, para una lista más limpia)
+        const uniqueResolutions = new Set();
+        formats = formats.filter(f => {
+            if (f.format_id === 'bestaudio' || f.format_id === 'best') return true;
+            if (uniqueResolutions.has(f.resolution)) return false;
+            uniqueResolutions.add(f.resolution);
+            return true;
+        });
 
         res.json({
             title: info.title,
             thumbnail: info.thumbnail,
-            duration: info.duration_string,
+            duration: info.duration_string || 'N/A',
             platform: info.extractor_key,
-            formats: formats.length > 0 ? formats : info.formats.filter(f => f.ext === 'mp4').slice(-5) // Fallback si no hay con ambos codecs combinados
+            formats: formats
         });
     } catch (error) {
         console.error('Error al procesar el video:', error);
@@ -111,7 +126,9 @@ app.get('/api/download', (req, res) => {
         '-f', format_id || 'best',
         '-o', '-', // Output to stdout
         '--no-playlist',
-        '--no-warnings'
+        '--no-warnings',
+        '--force-ipv4',
+        '--extractor-args', 'youtube:player_client=android'
     ]);
 
     // Enviar los datos del video al cliente conforme se descargan
@@ -137,4 +154,3 @@ app.get('/api/download', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Servidor iniciado en http://localhost:${PORT}`);
 });
-
