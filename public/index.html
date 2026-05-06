@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniDown | Descarga Videos de Redes Sociales</title>
+    <meta name="description"
+        content="Descarga tus videos favoritos de YouTube, Facebook, TikTok y más con un solo clic de forma gratuita y en alta calidad.">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'><path fill='%233b82f6' d='M0 256L288 0l-32 192h128L96 512l32-192H0z'/></svg>">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+</head>
+
+<body>
+    <div class="background-animations">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <main class="container">
+        <header>
+            <div class="logo">
+                <i class="fa-solid fa-bolt"></i>
+                <span>OmniDown</span>
+            </div>
+            <nav>
+                <a href="https://www.youtube.com/" target="_blank"><i class="fa-brands fa-youtube"></i> YouTube</a>
+                <a href="https://www.facebook.com/" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook</a>
+                <a href="https://www.tiktok.com/" target="_blank"><i class="fa-brands fa-tiktok"></i> TikTok</a>
+            </nav>
+        </header>
+
+        <section class="hero">
+            <h1>Descarga Cualquier Video<br><span class="gradient-text">Sin Límites</span></h1>
+            <p>Pega el enlace de tu video favorito de YouTube, TikTok, Facebook o Instagram y guárdalo en tu dispositivo
+                en segundos.</p>
+
+            <form id="download-form" class="search-box">
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-link link-icon"></i>
+                    <input type="url" id="video-url" placeholder="Pega aquí el enlace del video..." required
+                        autocomplete="off">
+                </div>
+                <button type="submit" id="submit-btn">
+                    <span>Procesar</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div id="loading" class="hidden">
+                <div class="spinner"></div>
+                <p>Analizando enlace, por favor espera...</p>
+            </div>
+
+            <div id="error-message" class="hidden error">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="error-text">Ocurrió un error. Verifica el enlace.</span>
+            </div>
+        </section>
+
+        <section id="result-section" class="hidden">
+            <div class="video-card glass-panel">
+                <div class="video-thumbnail">
+                    <img id="res-thumb" src="" alt="Thumbnail del video">
+                    <span class="platform-badge" id="res-platform"><i class="fa-brands fa-youtube"></i></span>
+                </div>
+                <div class="video-details">
+                    <h3 id="res-title">Título del Video</h3>
+                    <p class="duration"><i class="fa-regular fa-clock"></i> <span id="res-duration">00:00</span></p>
+
+                    <div class="download-options" id="res-formats">
+                        <!-- Formatos inyectados por JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 OmniDown. Todos los derechos reservados. | Diseñado Por Pablo Chambi</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;"><i class="fa-regular fa-envelope"></i> Contacto: <a
+                    href="mailto:Pchambi1997@gmail.com"
+                    style="color: var(--accent-1); text-decoration: none; font-weight: 600;">Pchambi1997@gmail.com</a>
+            </p>
+        </footer>
+
+        <!-- Toast Notifications Container -->
+        <div id="toast-container" class="toast-container"></div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
