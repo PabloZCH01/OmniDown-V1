@@ -97,7 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const size = format.filesize ? formatBytes(format.filesize) : 'Tamaño desc.';
                 
                 // Generar el enlace hacia nuestro propio servidor para forzar la descarga
-                const downloadUrl = `/api/download?url=${encodeURIComponent(url)}&format_id=${format.format_id}&ext=${format.ext}&title=${encodeURIComponent(data.title)}`;
+                let downloadUrl = `/api/download?url=${encodeURIComponent(url)}&format_id=${format.format_id}&ext=${format.ext}&title=${encodeURIComponent(data.title)}`;
+
+                // Si usamos una API de respaldo, descargamos directamente del enlace seguro
+                if (format.direct_url) {
+                    downloadUrl = format.direct_url;
+                }
 
                 const btnHtml = `
                     <a href="${downloadUrl}" class="dl-btn" download onclick="window.showDownloadToast('${height}')">
