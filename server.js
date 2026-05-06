@@ -84,7 +84,7 @@ app.post('/api/info', async (req, res) => {
         });
     } catch (error) {
         console.error('Error al procesar el video:', error);
-        res.status(500).json({ error: 'No se pudo obtener la información del video. Verifica que el enlace sea válido y público.' });
+        res.status(500).json({ error: 'Error del servidor: ' + (error.message || 'Error desconocido').substring(0, 200) });
     }
 });
 
@@ -137,3 +137,4 @@ app.get('/api/download', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Servidor iniciado en http://localhost:${PORT}`);
 });
+
