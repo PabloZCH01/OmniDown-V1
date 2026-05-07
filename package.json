@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "postinstall": "node -e \"const cp = require('child_process'); const p = process.platform === 'win32' ? 'yt-dlp.exe' : 'yt-dlp'; cp.execSync('node_modules/youtube-dl-exec/bin/' + p + ' --update-to nightly', {stdio: 'inherit'});\""
   },
   "dependencies": {
     "cors": "^2.8.5",
