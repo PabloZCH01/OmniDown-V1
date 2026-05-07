@@ -1,4 +1,4 @@
-const CACHE_NAME = 'omnidown-v1';
+const CACHE_NAME = 'omnidown-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

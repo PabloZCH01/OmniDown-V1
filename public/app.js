@@ -78,9 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const filteredFormats = [];
             
             data.formats.forEach(f => {
-                if (f.resolution === 'Audio') {
+                if (f.resolution === 'Audio' || f.format_id === 'best' || f.format_id === 'inv_video' || f.format_id === 'cobalt') {
                     filteredFormats.push(f);
-                } else if (f.resolution !== 'unknown' && f.resolution.includes('x') && !uniqueResolutions.has(f.resolution)) {
+                } else if (!uniqueResolutions.has(f.resolution)) {
                     uniqueResolutions.add(f.resolution);
                     filteredFormats.push(f);
                 }
@@ -93,7 +93,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             finalFormats.forEach(format => {
-                const height = format.resolution === 'Audio' ? '🎵 Audio MP3' : (format.resolution !== 'unknown' ? format.resolution.split('x')[1] + 'p' : format.ext.toUpperCase());
+                let height = format.ext.toUpperCase();
+                if (format.resolution === 'Audio') {
+                    height = '🎵 Audio MP3';
+                } else if (format.resolution && format.resolution.includes('x')) {
+                    height = format.resolution.split('x')[1] + 'p';
+                } else if (format.resolution && format.resolution !== 'unknown') {
+                    height = '🎬 ' + format.resolution;
+                }
                 const size = format.filesize ? formatBytes(format.filesize) : 'Tamaño desc.';
                 
                 // Generar el enlace hacia nuestro propio servidor para forzar la descarga
