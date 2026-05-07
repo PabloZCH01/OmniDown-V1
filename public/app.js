@@ -131,7 +131,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             loadingEl.classList.add('hidden');
-            errorText.textContent = error.message;
+            
+            // Si es un error de YouTube, ofrecer alternativa externa
+            if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                errorText.innerHTML = `YouTube ha bloqueado el servidor en la nube. <br><br> 
+                <a href="https://ssyoutube.com/watch?v=${url.split('v=')[1] ? url.split('v=')[1].split('&')[0] : url.split('/').pop()}" target="_blank" style="display:inline-block; margin-top:10px; padding:10px 15px; background:linear-gradient(135deg, #ff0000, #ff4d4d); color:white; border-radius:8px; text-decoration:none; font-weight:bold; font-size:14px; box-shadow: 0 4px 15px rgba(255,0,0,0.3); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <i class="fa-solid fa-external-link-alt"></i> Descargar vía Servidor Externo (Anti-Bloqueo)
+                </a>`;
+            } else {
+                errorText.textContent = error.message;
+            }
+            
             errorEl.classList.remove('hidden');
         } finally {
             submitBtn.disabled = false;
