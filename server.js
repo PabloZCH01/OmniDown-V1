@@ -112,7 +112,7 @@ app.post('/api/info', async (req, res) => {
             
             // Función helper para consumir API HTTP
             const fetchJson = (url) => new Promise((resolve, reject) => {
-                require('https').get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (resp) => {
+                require('https').get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' } }, (resp) => {
                     let data = '';
                     resp.on('data', chunk => data += chunk);
                     resp.on('end', () => {
@@ -121,7 +121,25 @@ app.post('/api/info', async (req, res) => {
                 }).on('error', reject);
             });
 
-            const invidiousData = await fetchJson(`https://invidious.asir.dev/api/v1/videos/${videoIdMatch[1]}`);
+            const instances = [
+                'https://inv.tux.pizza',
+                'https://invidious.flokinet.to',
+                'https://invidious.protokolla.fi',
+                'https://invidious.asir.dev'
+            ];
+            
+            let invidiousData = null;
+            for (const instance of instances) {
+                try {
+                    console.log('Intentando Invidious:', instance);
+                    invidiousData = await fetchJson(`${instance}/api/v1/videos/${videoIdMatch[1]}`);
+                    if (invidiousData && invidiousData.formatStreams) break;
+                } catch (e) {
+                    console.error('Fallo en', instance, e.message);
+                }
+            }
+            
+            if (!invidiousData || !invidiousData.formatStreams) throw new Error("Todas las instancias Invidious fallaron");
             
             const fallbackFormats = [];
             
