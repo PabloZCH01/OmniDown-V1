@@ -28,7 +28,7 @@ app.post('/api/info', async (req, res) => {
         
         let stdoutData;
         try {
-            const result = await execFile(ytDlpPath, [
+            const args = [
                 url,
                 '--dump-json',
                 '--no-playlist',
@@ -36,7 +36,15 @@ app.post('/api/info', async (req, res) => {
                 '--prefer-free-formats',
                 '--force-ipv4',
                 '--extractor-args', 'youtube:player_client=android'
-            ]);
+            ];
+
+            // Si existe el archivo de cookies, añadirlo para saltarse el bloqueo
+            const cookiesPath = path.join(__dirname, 'cookies.txt');
+            if (fs.existsSync(cookiesPath)) {
+                args.push('--cookies', cookiesPath);
+            }
+
+            const result = await execFile(ytDlpPath, args);
             stdoutData = result.stdout;
         } catch (execError) {
             // execFile might reject if there's stderr output (like warnings) even if it succeeds
@@ -179,7 +187,7 @@ app.get('/api/download', (req, res) => {
 
     console.log(`Iniciando descarga: ${filename} (Formato: ${format_id})`);
 
-    const ytDlpProcess = spawn(ytDlpPath, [
+    const args = [
         url,
         '-f', format_id || 'best',
         '-o', '-', // Output to stdout
@@ -187,7 +195,14 @@ app.get('/api/download', (req, res) => {
         '--no-warnings',
         '--force-ipv4',
         '--extractor-args', 'youtube:player_client=android'
-    ]);
+    ];
+
+    const cookiesPath = path.join(__dirname, 'cookies.txt');
+    if (fs.existsSync(cookiesPath)) {
+        args.push('--cookies', cookiesPath);
+    }
+
+    const ytDlpProcess = spawn(ytDlpPath, args);
 
     // Enviar los datos del video al cliente conforme se descargan
     ytDlpProcess.stdout.pipe(res);
