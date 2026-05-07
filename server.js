@@ -59,7 +59,7 @@ app.post('/api/info', async (req, res) => {
                 .filter(f => f.ext === 'mp4' && f.vcodec !== 'none' && f.acodec !== 'none' && f.format_id)
                 .map(f => ({
                     format_id: f.format_id,
-                    resolution: f.resolution || 'Auto',
+                    resolution: (f.resolution && f.resolution !== 'unknown') ? f.resolution : (f.format_id === 'hd' ? 'HD (Alta Calidad)' : (f.format_id === 'sd' ? 'SD (Calidad Normal)' : 'Video')),
                     ext: f.ext,
                     url: f.url,
                     filesize: f.filesize
