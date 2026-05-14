@@ -58,15 +58,34 @@ document.addEventListener('DOMContentLoaded', () => {
             // Set platform icon
             let iconClass = 'fa-solid fa-video';
             let iconColor = '#fff';
-            if (data.platform.includes('youtube')) {
+            const platformName = data.platform.toLowerCase();
+            if (platformName.includes('youtube')) {
                 iconClass = 'fa-brands fa-youtube';
                 iconColor = '#ff0000';
-            } else if (data.platform.includes('facebook')) {
+            } else if (platformName.includes('facebook')) {
                 iconClass = 'fa-brands fa-facebook';
                 iconColor = '#1877f2';
-            } else if (data.platform.includes('tiktok')) {
+            } else if (platformName.includes('tiktok')) {
                 iconClass = 'fa-brands fa-tiktok';
                 iconColor = '#00f2fe';
+            } else if (platformName.includes('twitter') || platformName.includes('x.com')) {
+                iconClass = 'fa-brands fa-twitter';
+                iconColor = '#1da1f2';
+            } else if (platformName.includes('pinterest')) {
+                iconClass = 'fa-brands fa-pinterest';
+                iconColor = '#e60023';
+            } else if (platformName.includes('vimeo')) {
+                iconClass = 'fa-brands fa-vimeo';
+                iconColor = '#1ab7ea';
+            } else if (platformName.includes('telegram')) {
+                iconClass = 'fa-brands fa-telegram';
+                iconColor = '#0088cc';
+            } else if (platformName.includes('whatsapp')) {
+                iconClass = 'fa-brands fa-whatsapp';
+                iconColor = '#25d366';
+            } else if (platformName.includes('instagram')) {
+                iconClass = 'fa-brands fa-instagram';
+                iconColor = '#e1306c';
             }
             resPlatform.innerHTML = `<i class="${iconClass}" style="color: ${iconColor};"></i>`;
 
