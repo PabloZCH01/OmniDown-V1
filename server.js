@@ -35,6 +35,7 @@ app.post('/api/info', async (req, res) => {
                 '--no-warnings',
                 '--prefer-free-formats',
                 '--force-ipv4',
+                '--no-cache-dir',
                 '--extractor-args', 'youtube:player_client=android'
             ];
 
@@ -128,16 +129,17 @@ app.post('/api/info', async (req, res) => {
                 'https://invidious.asir.dev'
             ];
             
-            let invidiousData = null;
-            for (const instance of instances) {
-                try {
-                    console.log('Intentando Invidious:', instance);
-                    invidiousData = await fetchJson(`${instance}/api/v1/videos/${videoIdMatch[1]}`);
-                    if (invidiousData && invidiousData.formatStreams) break;
-                } catch (e) {
-                    console.error('Fallo en', instance, e.message);
-                }
-            }
+            console.log('Intentando instancias Invidious en paralelo...');
+            let invidiousData = await Promise.any(
+                instances.map(async (instance) => {
+                    const data = await fetchJson(`${instance}/api/v1/videos/${videoIdMatch[1]}`);
+                    if (data && data.formatStreams) {
+                        console.log('Invidious exitoso en:', instance);
+                        return data;
+                    }
+                    throw new Error(`Sin streams válidos en ${instance}`);
+                })
+            ).catch(e => null);
             
             if (!invidiousData || !invidiousData.formatStreams) throw new Error("Todas las instancias Invidious fallaron");
             
